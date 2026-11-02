@@ -18,10 +18,10 @@ It is strictly monophonic in every OP-1 play mode, with last-note priority. Lett
 
 | Encoder | Turn | Push, then turn |
 |---|---|---|
-| Blue 🔵 | **Cutoff**: ladder filter, 20 Hz to about 14 kHz, following the keyboard by two thirds. | **Wave**: saw → saw + sub → square + sub → narrow pulse. |
-| Green 🟢 | **Resonance**: the low end stays full as it rises. | **Detune**: second oscillator, 0 to 25 cents, then a fifth, then an octave. |
-| White ⚪ | **Env**: how far the filter envelope opens the cutoff, up to 6 octaves. | **Decay**: filter envelope decay, 5 ms to 2 s. |
-| Orange 🟠 | **Drive**: overloads the mixer up to the middle, then adds drive after the filter. | — |
+| Blue&nbsp;🔵 | **Cutoff**: ladder filter, 20 Hz to about 14 kHz, following the keyboard by two thirds. | **Wave**: saw → saw + sub → square + sub → narrow pulse. |
+| Green&nbsp;🟢 | **Resonance**: the low end stays full as it rises. | **Detune**: second oscillator, 0 to 25 cents, then a fifth, then an octave. |
+| White&nbsp;⚪ | **Env**: how far the filter envelope opens the cutoff, up to 6 octaves. | **Decay**: filter envelope decay, 5 ms to 2 s. |
+| Orange&nbsp;🟠 | **Drive**: overloads the mixer up to the middle, then adds drive after the filter. | — |
 
 Push blue, green or white again to return to its main control.
 ## Download and install
