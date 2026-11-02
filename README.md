@@ -2,7 +2,7 @@
 
 A monophonic French-touch bass engine for the original OP-1, built for Hundekraft.
 
-![CROSS on the OP-1 screen](media/screen.png)
+![CROSS on the OP-1 screen](media/cross.gif)
 
 > **A word first.** CROSS is vibe-coded: it was written with an AI coding assistant. I'm a beginner in sound synthesis, so ideas for new features and improvements are very welcome, whether about the sound, the knobs or the screen. [Open an issue](../../issues) and tell me.
 
