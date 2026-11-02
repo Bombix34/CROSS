@@ -2,3 +2,4 @@
 *.knl binary
 *.wav binary
 *.png binary
+*.opmod binary

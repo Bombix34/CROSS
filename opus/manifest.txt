@@ -1,0 +1,16 @@
+# bomb_x.cross: CROSS, a monophonic bass engine (cross/), for Opus 2. Two oscillators and a sub into a four-pole
+# ladder filter with its own envelope, then a level-compensated drive. T1: blue cutoff, green resonance, white env,
+# orange drive; a push on blue, green or white turns it to wave, detune or decay, another push back.
+opmod     1
+id        bomb_x.cross
+name      Cross
+author    Bomb-X
+version   0.3.7
+core      2.0
+adds      engine cross
+uses      blue_push synth t1 modal "cutoff or wave"
+uses      green_push synth t1 modal "resonance or detune"
+uses      white_push synth t1 modal "env or decay"
+uses      blue_turn synth t1 modal "wave, after a push"
+uses      green_turn synth t1 modal "detune, after a push"
+uses      white_turn synth t1 modal "decay, after a push"

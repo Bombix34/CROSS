@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.7
+
+- Opus 2 version (`cross.opmod`, beta): the same DSP and screen code as the Hundekraft version, built with the Opus 2 plugin kit. Checked on a computer only, not yet on a real OP-1.
+- With MIDI on Opus, velocity sets only the level, not how far the filter opens.
+- The Hundekraft version is unchanged (`cross.knl` 0.3.6).
+
 ## 0.3.6
 
 First public release.
