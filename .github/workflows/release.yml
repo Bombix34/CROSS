@@ -1,0 +1,58 @@
+# A GitHub release for the newest version in CHANGELOG.md, made on a push to main when that version has none yet:
+# tag vX.Y.Z (kept if it is already pushed), title "CROSS X.Y.Z", the CHANGELOG section and the files' SHA-256 as its
+# text, download/cross.knl and download/cross.opmod attached. GitHub adds the source code archives to every release.
+# The files are the ones committed in download/: build them, copy them there and add the CHANGELOG section first.
+name: Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Release the CHANGELOG's newest version
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          version=$(sed -n 's/^## \([0-9][0-9.]*\)[[:space:]]*$/\1/p' CHANGELOG.md | head -n 1)
+          if [ -z "$version" ]; then
+            echo "::error::CHANGELOG.md has no '## X.Y.Z' heading"
+            exit 1
+          fi
+          tag="v$version"
+          if gh release view "$tag" > /dev/null 2>&1; then
+            echo "Release $tag already exists: nothing to do."
+            exit 0
+          fi
+          files="download/cross.knl download/cross.opmod"
+          for f in $files; do
+            if [ ! -s "$f" ]; then
+              echo "::error::$f is missing"
+              exit 1
+            fi
+          done
+          {
+            awk -v head="## $version" '$0 ~ "^" head "[[:space:]]*$" { on = 1; next } on && /^## / { exit } on' CHANGELOG.md
+            echo
+            echo "Install and what was tested where: see the [README](https://github.com/$GITHUB_REPOSITORY/blob/$tag/README.md#download-and-install)."
+            echo
+            echo "SHA-256:"
+            for f in $files; do
+              echo "- \`$(basename "$f")\`: \`$(sha256sum "$f" | cut -d ' ' -f 1)\`"
+            done
+          } > "$RUNNER_TEMP/notes.md"
+          cat "$RUNNER_TEMP/notes.md"
+          gh release create "$tag" $files --title "CROSS $version" --notes-file "$RUNNER_TEMP/notes.md" --target "$GITHUB_SHA"
