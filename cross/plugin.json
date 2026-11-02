@@ -1,0 +1,29 @@
+{
+  "name": "cross",
+  "kind": "synth",
+  "order": 0,
+  "loadable": true,
+  "symbol": "ENGINE_cross",
+  "sources": [
+    "cross.c",
+    "cross_dsp.c"
+  ],
+  "defaults": [
+    11450,
+    13000,
+    19115,
+    11500
+  ],
+  "page2_defaults": [
+    10923,
+    13900,
+    22400
+  ],
+  "screen": {
+    "svg": "cross.svg",
+    "symbol": "SCREEN_cross"
+  },
+  "claims": [],
+  "author": "Bomb-X",
+  "version": "0.3.6"
+}

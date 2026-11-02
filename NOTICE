@@ -1,0 +1,25 @@
+CROSS - a monophonic bass synth engine plugin for the Teenage Engineering OP-1 (firmware R246, Hundekraft)
+Copyright (C) 2026 Bomb-X
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+version. It is distributed WITHOUT ANY WARRANTY; see the GNU General Public License (LICENSE) for details.
+
+Covered: the source code in cross/ and tools/, the compiled plugin in download/, and
+the images in media/.
+
+ADDITIONAL PERMISSION (GPL-3.0 section 7)
+As an additional permission, you may combine this program, or a work based on it, with the Teenage Engineering OP-1
+firmware (original or patched) and convey the resulting combination, provided that the parts of the combination
+that are this program or based on it are conveyed under the terms of the GPL with this additional permission. The
+OP-1 firmware itself is not covered by this license.
+
+BUILT WITH
+- The Hundekraft kennel plugin SDK (https://hundekraft.github.io/op1-workshop/), derived from op1r-src, the op1r
+  plugin SDK by pcppcp and contributors, GPL-3.0-or-later with the same additional permission. CROSS includes its
+  header op1_plugin.h at build time; the header is not part of this repository.
+
+NOT COVERED by this license
+- The Teenage Engineering OP-1 firmware and any part of it. Copyright Teenage Engineering. This repository contains
+  no firmware. OP-1 is a Teenage Engineering product; this project is not affiliated with or endorsed by Teenage
+  Engineering.

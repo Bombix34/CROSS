@@ -1,0 +1,15 @@
+# build output (the release file lives in download/)
+build/
+*.o
+*.elf
+
+# Node
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# demo renders from tools/preview.mjs (not published)
+demos/
