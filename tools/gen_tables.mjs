@@ -5,7 +5,8 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const FS = 44100;
+// The voices' rate: the OP-1 renders a voice 128 samples a 1.45 ms block, then the OS halves it to 44.1 kHz.
+const FS = 88200;
 const round = Math.round;
 const clamp = (x, lo, hi) => Math.min(hi, Math.max(lo, x));
 
@@ -16,19 +17,19 @@ const tanh = Array.from({ length: 257 }, (_, k) =>
 // log2(1 + i/64) in Q16.
 const log2 = Array.from({ length: 65 }, (_, i) => round(65536 * Math.log2(1 + i / 64)));
 
-// One-pole coefficient for cutoff = 20 Hz * 2^(k/16), Q15, capped near 13 kHz.
+// One-pole coefficient for cutoff = 40 Hz * 2^(k/16), Q15, capped near 26 kHz (past it, the filter is open).
 const G_MAX = 27525;
 const gcoef = Array.from({ length: 161 }, (_, k) => {
-  const fc = 20 * 2 ** (k / 16);
+  const fc = 40 * 2 ** (k / 16);
   return Math.min(G_MAX, round(32768 * (1 - Math.exp(-2 * Math.PI * fc / FS))));
 });
 
-// Contour decay per 16-sample step, Q16: 5 ms to 2 s, exponential knob.
+// Contour decay per 16-sample step, Q16: 2.5 ms to 1 s, exponential knob.
 const decay = Array.from({ length: 129 }, (_, i) => {
-  const tau = 0.005 * 400 ** (i / 128);
+  const tau = 0.0025 * 400 ** (i / 128);
   return Math.min(65535, round(65536 * (1 - Math.exp(-16 / (tau * FS)))));
 });
-const ATTACK = round(65536 * (1 - Math.exp(-16 / (0.0015 * FS))));
+const ATTACK = round(65536 * (1 - Math.exp(-16 / (0.00075 * FS))));
 
 // VCO2 pitch ratio, Q16, nearest index (p >> 8): 0-25 cents, then a fifth, then an octave.
 const detune = Array.from({ length: 128 }, (_, i) => {
@@ -61,8 +62,8 @@ for (let i = 0; i <= 128; i++) {
   drivePunch.push(round(22937 * b ** 1.5));
 }
 
-// C2 (65.406 Hz) as the key-tracking reference, as log2 of the phase increment in Q16.
-const LOG2_REF = round(65536 * Math.log2(65.406 / FS * 2 ** 32));
+// C3 (130.81 Hz) as the key-tracking reference, as log2 of the phase increment in Q16.
+const LOG2_REF = round(65536 * Math.log2(130.812 / FS * 2 ** 32));
 
 const tables = { tanh, log2, gcoef, decay, detune, drivePre, drivePost, driveOut, drivePunch, ATTACK, LOG2_REF, G_MAX };
 writeFileSync(join(root, 'tools', 'tables.json'), JSON.stringify(tables));

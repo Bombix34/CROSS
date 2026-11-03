@@ -8,7 +8,8 @@ import { dirname, join } from 'node:path';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const T = JSON.parse(readFileSync(join(root, 'tools', 'tables.json'), 'utf8'));
-const FS = 44100, BLOCK = 128, STEP = 16;
+// FS: the voices' rate on the OP-1 (128 samples a 1.45 ms block); the demos are halved to OUT_FS, as the OS does.
+const FS = 88200, OUT_FS = 44100, BLOCK = 128, STEP = 16;
 const ENV_ONE = 1 << 23, ENV_TARGET = 10905190, OCT_MAX = (160 << 12) - 1;
 const F_SUB = 1, F_DECAY = 2, F_STILL = 4;
 
@@ -204,8 +205,32 @@ function play(name, words, opts = {}) {
       out[i] = Math.round(dry[i] * amp);
     }
   }
-  writeWav(join(root, 'demos', `${name}.wav`), out);
-  report(name, out);
+  const half = decimate(out);
+  writeWav(join(root, 'demos', `${name}.wav`), half);
+  report(name, half);
+}
+
+// 88.2 kHz -> 44.1 kHz. The OS's own decimator is not documented: a 63-tap half-band (Blackman-windowed sinc) stands
+// in for it.
+const HB = (() => {
+  const h = Array.from({ length: 63 }, (_, i) => {
+    const t = i - 31, w = 0.42 - 0.5 * Math.cos(Math.PI * i / 31) + 0.08 * Math.cos(2 * Math.PI * i / 31);
+    return (t ? Math.sin(Math.PI * t / 2) / (Math.PI * t) : 0.5) * w;
+  });
+  const sum = h.reduce((a, c) => a + c, 0);
+  return h.map(c => c / sum);
+})();
+function decimate(x) {
+  const y = new Int16Array(x.length >> 1);
+  for (let j = 0; j < y.length; j++) {
+    let s = 0;
+    for (let k = 0; k < HB.length; k++) {
+      const i = 2 * j + k - 31;
+      if (i >= 0 && i < x.length) s += HB[k] * x[i];
+    }
+    y[j] = clamp(Math.round(s), -32768, 32767);
+  }
+  return y;
 }
 
 function report(name, x) {
@@ -219,7 +244,7 @@ function writeWav(path, x) {
   const buf = Buffer.alloc(44 + x.length * 2);
   buf.write('RIFF', 0); buf.writeUInt32LE(36 + x.length * 2, 4); buf.write('WAVE', 8);
   buf.write('fmt ', 12); buf.writeUInt32LE(16, 16); buf.writeUInt16LE(1, 20); buf.writeUInt16LE(1, 22);
-  buf.writeUInt32LE(FS, 24); buf.writeUInt32LE(FS * 2, 28); buf.writeUInt16LE(2, 32); buf.writeUInt16LE(16, 34);
+  buf.writeUInt32LE(OUT_FS, 24); buf.writeUInt32LE(OUT_FS * 2, 28); buf.writeUInt16LE(2, 32); buf.writeUInt16LE(16, 34);
   buf.write('data', 36); buf.writeUInt32LE(x.length * 2, 40);
   x.forEach((s, i) => buf.writeInt16LE(s, 44 + i * 2));
   writeFileSync(path, buf);

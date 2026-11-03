@@ -1,13 +1,13 @@
 /* "cross": a mono bass engine in the spirit of a classic three-oscillator ladder synth, for French-touch lines.
  * Page 1
- *   blue  (knob 0) CUTOFF:    ladder cutoff, 20 Hz .. 14 kHz, with 2/3 key tracking
+ *   blue  (knob 0) CUTOFF:    ladder cutoff, 40 Hz .. open, with 2/3 key tracking
  *   green (knob 1) RESONANCE: ladder resonance, bass kept
  *   white (knob 2) ENV:       how far the filter envelope opens the cutoff, 0 .. 6 octaves
  *   red   (knob 3) DRIVE:     mixer overload up to the middle, then post-filter drive; level-compensated
  * Page 2 (encoder press on blue, green, white; preset words 5, 6, 7)
  *   blue  WAVE:   saw -> saw + sub -> square + sub -> narrow pulse
  *   green DETUNE: VCO2 detune 0 .. 25 cents, then a fifth, then an octave
- *   white DECAY:  filter envelope decay, 5 ms .. 2 s
+ *   white DECAY:  filter envelope decay, 2.5 ms .. 1 s
  * Monophonic in every play mode: one voice of DSP, lent to the newest key held (last-note priority); letting go of it
  * hands it back to the newest key still held, legato, without restarting the filter envelope. The amp envelope, glide
  * (the OP-1's mono / legato play modes) and the rest of the play modes are the OP-1's own. The DSP lives in

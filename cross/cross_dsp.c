@@ -4,6 +4,10 @@
  * Formats: audio Q15 (32768 = 1.0), saturator input Q13, pitch/cutoff in
  * octaves Q16, contour Q23.
  *
+ * Rate: the OP-1 renders a voice at 88.2 kHz (128 samples a 1.45 ms block,
+ * which the OS then halves to 44.1 kHz); the times and frequencies here and
+ * in the tables (tools/gen_tables.mjs) are at that rate.
+ *
  * Cost: a block runs in three passes, so each loop keeps its values in
  * registers: the contour, cutoff and output level once per 16 samples; the
  * oscillators and the mixer overload into out[]; the ladder and post drive
@@ -19,7 +23,7 @@
 #include "cross_tables.h"
 
 #define ENV_TARGET 10905190u /* attack aims at 1.3 so it reaches 1.0 quickly */
-#define OCT_MAX ((160 << 12) - 1) /* top of the cutoff table, about 20 kHz */
+#define OCT_MAX ((160 << 12) - 1) /* top of the cutoff table, 41 kHz (open past TCH_G_MAX's 26 kHz) */
 #define INC_MIN 4096u
 #define INC_MAX 0x7f000000u
 #define MAX_STEPS 8 /* 128 samples */
@@ -99,7 +103,7 @@ static int32_t log2_q16(uint32_t x)
     return (n << 16) + tch_log2[i] + (((tch_log2[i + 1] - tch_log2[i]) * fr) >> 8);
 }
 
-/* Ladder stage coefficient for a cutoff in octaves above 20 Hz (Q16). */
+/* Ladder stage coefficient for a cutoff in octaves above 40 Hz (Q16). */
 static inline int32_t cutoff_coef(int32_t oct)
 {
     int32_t idx, fr, a;
@@ -166,7 +170,7 @@ static ALWAYS_INLINE int32_t saw(uint32_t ph, uint32_t inc, uint32_t inc2, const
 }
 
 /* The largest phase - inc that keeps 16 samples from ph clear of any wrap
-   window, and with no wrap after them (0: never, for notes above 2.6 kHz). */
+   window, and with no wrap after them (0: never, for notes above 5.2 kHz). */
 static inline uint32_t clear_lim(uint32_t inc)
 {
     return inc < 0x0F0F0F0Fu ? 0u - 17 * inc : 0;
@@ -178,7 +182,7 @@ static inline uint32_t clear_lim(uint32_t inc)
    (2 cents at most, now and then) over several seconds, plus a fixed
    offset of up to 0.4 cent drawn at each note. Ratios in Q24: 1 cent is
    about 9690. ---- */
-#define DRIFT_POLE 8    /* the wander's two smoothing poles: about 0.2 Hz */
+#define DRIFT_POLE 8    /* the wander's two smoothing poles: about 0.4 Hz */
 #define NUDGE_SHIFT 19  /* a note's offset: +-4096, 0.4 cent */
 
 static inline int32_t noise(uint32_t *rng)
@@ -232,7 +236,7 @@ static ALWAYS_INLINE void osc_pass(tch_voice *v, int16_t *out, int steps, const 
     int st, i;
 
     for (st = 0; st < steps; st++) {
-        /* the pitch once per 16 samples (0.36 ms): glides stay smooth */
+        /* the pitch once per 16 samples (0.18 ms): glides stay smooth */
         const uint32_t i0 = clampu((uint32_t)inc[st * TCH_BLOCK_STEP], INC_MIN, INC_MAX);
         const uint32_t i1 = drift(i0, o->d1), i2 = drift(raise(i0, o->up), o->d2);
         const uint32_t lim1 = clear_lim(i1), lim2 = clear_lim(i2);

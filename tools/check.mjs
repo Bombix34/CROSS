@@ -88,7 +88,7 @@ const check = (name, ok, detail) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${nam
   check('velocity darkens', soft < full / 4, `harmonics 8-20 vs fundamental: ${db(full)} dB at velocity 127, ${db(soft)} dB at 64`);
 }
 
-// 7. The analogue drift stays subtle: each VCO's pitch offset over 5 minutes of notes, from the voice's state.
+// 7. The analogue drift stays subtle: each VCO's pitch offset over 2.5 minutes of notes, from the voice's state.
 {
   const v = newVoice(), out = new Int16Array(BLOCK), inc = new Int32Array(BLOCK).fill(midiInc(33));
   const cents = (a, n) => (a + n) / 2 ** 24 * 1731.23;
